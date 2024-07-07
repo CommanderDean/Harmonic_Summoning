@@ -15,27 +15,18 @@
 
 
         @media (max-width: 600px) {
-    body {
+    .button-row {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    button {
+        width: 150px;
+        height: 50px;
         font-size: 18px;
+        margin-bottom: 10px;
     }
-
-    h1 {
-        font-size: 48px;
-    }
-
-    h2 {
-        font-size: 36px;
-    }
-
-    #spellLevel {
-        font-size: 32px;
-    }
-
-    .verse {
-        font-size: 20px;
-    }
-}
-        
+}  
 
 
 
@@ -65,12 +56,38 @@
             font-family: 'Amatic SC', cursive;
             margin-bottom: 20px;
         }
+        
         h1 {
-            font-size: 72px;
-        }
-        h2 {
-            font-size: 56px;
-        }
+    font-size: 72px;
+    margin-bottom: 20px;
+}
+
+h2 {
+    font-size: 56px;
+    margin-bottom: 20px;
+}
+
+/* Adjust font sizes for smaller screens */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 48px;
+    }
+
+    h2 {
+        font-size: 36px;
+    }
+}
+
+/* Further reduce font sizes for very small screens */
+@media (max-width: 480px) {
+    h1 {
+        font-size: 36px;
+    }
+
+    h2 {
+        font-size: 28px;
+    }
+}
         .canvas-container {
     position: relative;
     width: 100%;
@@ -102,12 +119,13 @@
     flex-wrap: wrap;
     justify-content: center;
     gap: 10px;
+    margin-bottom: 10px;
 }
         button {
-            padding: 10px 5px;
-            font-size: 16px;
+            padding: 25px;
+            font-size: 20px;
             font-family: 'Caveat', cursive;
-            color: #4a2c0f;
+            color: #1b1610;
             background-color: transparent;
             background-image: url('images/button.png');
             background-size: contain;
@@ -115,9 +133,8 @@
             background-position: center;
             border: none;
             cursor: pointer;
-            width: calc(50% - 5px);
-            max-width: 150px;
-            height: auto;
+            width: 150;
+            height: 50;
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -484,33 +501,35 @@ resizeCanvas(); // Call once to set initial size
         }
 
         function drawWaveform(harmonics, isTarget) {
-            waveformCtx.beginPath();
-            if (isTarget) {
-                waveformCtx.strokeStyle = 'blue';
-            } else {
-                const matchPercentage = calculateMatch();
-                if (matchPercentage < 70) {
-                    waveformCtx.strokeStyle = 'red';
-                } else if (matchPercentage < 93) {
-                    waveformCtx.strokeStyle = 'red';
-                } else {
-                    waveformCtx.strokeStyle = 'green';
-                }
-            }
-            for (let x = 0; x < width; x++) {
-                let y = 0;
-                for (let i = 0; i < harmonics.length; i++) {
-                    y += harmonics[i] * Math.sin((i + 1) * x * 0.05);
-                }
-                y = height / 2 - y * 50;
-                if (x === 0) {
-                    waveformCtx.moveTo(x, y);
-                } else {
-                    waveformCtx.lineTo(x, y);
-                }
-            }
-            waveformCtx.stroke();
+    waveformCtx.beginPath();
+    if (isTarget) {
+        waveformCtx.strokeStyle = 'blue';
+    } else {
+        const matchPercentage = calculateMatch();
+        if (matchPercentage < 70) {
+            waveformCtx.strokeStyle = 'red';
+        } else if (matchPercentage < 93) {
+            waveformCtx.strokeStyle = 'red';
+        } else {
+            waveformCtx.strokeStyle = 'green';
         }
+    }
+    const canvasWidth = waveformCanvas.width;
+    const canvasHeight = waveformCanvas.height;
+    for (let x = 0; x < canvasWidth; x++) {
+        let y = 0;
+        for (let i = 0; i < harmonics.length; i++) {
+            y += harmonics[i] * Math.sin((i + 1) * x * (0.05 * 600 / canvasWidth));
+        }
+        y = canvasHeight / 2 - y * (50 * canvasHeight / 200);
+        if (x === 0) {
+            waveformCtx.moveTo(x, y);
+        } else {
+            waveformCtx.lineTo(x, y);
+        }
+    }
+    waveformCtx.stroke();
+}
 
         function updateCanvas() {
             waveformCtx.clearRect(0, 0, width, height);

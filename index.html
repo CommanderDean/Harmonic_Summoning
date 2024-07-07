@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>The Harmonic Summoning</title>
    
    
@@ -12,7 +12,33 @@
    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Amatic+SC:wght@700&display=swap');
+
+
+        @media (max-width: 600px) {
+    body {
+        font-size: 18px;
+    }
+
+    h1 {
+        font-size: 48px;
+    }
+
+    h2 {
+        font-size: 36px;
+    }
+
+    #spellLevel {
+        font-size: 32px;
+    }
+
+    .verse {
+        font-size: 20px;
+    }
+}
         
+
+
+
         body {
             font-family: 'Caveat', cursive;
             display: flex;
@@ -29,10 +55,10 @@
         .parchment {
             background-image: url('images/parchment.jpg');
             background-size: cover;
-            padding: 40px;
+            padding: 20px;
             border-radius: 10px;
             max-width: 800px;
-            width: 100%;
+            width: 95%;
             box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
         }
         h1, h2, #spellLevel {
@@ -46,11 +72,11 @@
             font-size: 56px;
         }
         .canvas-container {
-            position: relative;
-            width: 600px;
-            height: 200px;
-            margin: 0 auto 20px;
-        }
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto 20px;
+}
         canvas {
             border: 5px solid #8b4513;
             margin-bottom: 20px;
@@ -72,14 +98,14 @@
             width: 100%;
         }
         .button-row {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+}
         button {
-            padding: 0;
-            font-size: 20px;
+            padding: 10px 5px;
+            font-size: 16px;
             font-family: 'Caveat', cursive;
             color: #4a2c0f;
             background-color: transparent;
@@ -89,8 +115,9 @@
             background-position: center;
             border: none;
             cursor: pointer;
-            width: 150px;
-            height: 50px;
+            width: calc(50% - 5px);
+            max-width: 150px;
+            height: auto;
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -143,9 +170,10 @@
             margin-bottom: 10px;
         }
         .slider-container {
-            width: 300px;
-            margin: 10px auto;
-        }
+    width: 100%;
+    max-width: 300px;
+    margin: 10px auto;
+}
         input[type="range"] {
             -webkit-appearance: none;
             width: 100%;
@@ -193,8 +221,8 @@
             margin-bottom: 20px;
         }
         #magicalEnergyField {
-            width: 600px;
-            height: 200px;
+            width: 100%;
+            height: auto;
             background-image: url('images/canvas.png');
             background-size: 100% 100%;
             background-repeat: no-repeat;
@@ -392,6 +420,25 @@
             updateCanvas();
         }
 
+        function resizeCanvas() {
+    const container = document.querySelector('.canvas-container');
+    const canvas = document.getElementById('magicalEnergyField');
+    const particleCanvas = document.getElementById('particleCanvas');
+    
+    const newWidth = container.clientWidth;
+    const newHeight = (newWidth / 3); // Maintain 3:1 aspect ratio
+    
+    canvas.width = newWidth;
+    canvas.height = newHeight;
+    particleCanvas.width = newWidth;
+    particleCanvas.height = newHeight;
+    
+    updateCanvas(); // Redraw the waveforms
+}
+
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas(); // Call once to set initial size
+
         function getOrdinalSuffix(i) {
             const j = i % 10,
                   k = i % 100;
@@ -433,6 +480,7 @@
             usedHintOnCurrentWave = false;
             voltmeter.style.display = 'none';
             updateCanvas();
+            resizeCanvas();
         }
 
         function drawWaveform(harmonics, isTarget) {

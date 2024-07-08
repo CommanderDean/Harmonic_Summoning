@@ -4,32 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>The Harmonic Summoning</title>
-   
-   
-   
-   
-   
-   
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Amatic+SC:wght@700&display=swap');
-
-
-        @media (max-width: 600px) {
-    .button-row {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    button {
-        width: 150px;
-        height: 50px;
-        font-size: 18px;
-        margin-bottom: 10px;
-    }
-}  
-
-
-
+        
         body {
             font-family: 'Caveat', cursive;
             display: flex;
@@ -46,54 +23,29 @@
         .parchment {
             background-image: url('images/parchment.jpg');
             background-size: cover;
-            padding: 20px;
+            padding: 40px;
             border-radius: 10px;
             max-width: 800px;
             width: 95%;
             box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+            margin: 0 auto;
         }
         h1, h2, #spellLevel {
             font-family: 'Amatic SC', cursive;
             margin-bottom: 20px;
         }
-        
         h1 {
-    font-size: 72px;
-    margin-bottom: 20px;
-}
-
-h2 {
-    font-size: 56px;
-    margin-bottom: 20px;
-}
-
-/* Adjust font sizes for smaller screens */
-@media (max-width: 768px) {
-    h1 {
-        font-size: 48px;
-    }
-
-    h2 {
-        font-size: 36px;
-    }
-}
-
-/* Further reduce font sizes for very small screens */
-@media (max-width: 480px) {
-    h1 {
-        font-size: 36px;
-    }
-
-    h2 {
-        font-size: 28px;
-    }
-}
+            font-size: 72px;
+        }
+        h2 {
+            font-size: 56px;
+        }
         .canvas-container {
-    position: relative;
-    width: 100%;
-    max-width: 600px;
-    margin: 0 auto 20px;
-}
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto 20px;
+        }
         canvas {
             border: 5px solid #8b4513;
             margin-bottom: 20px;
@@ -115,17 +67,16 @@ h2 {
             width: 100%;
         }
         .button-row {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 10px;
-}
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
         button {
-            padding: 25px;
+            padding: 0;
             font-size: 20px;
             font-family: 'Caveat', cursive;
-            color: #1b1610;
+            color: #4a2c0f;
             background-color: transparent;
             background-image: url('images/button.png');
             background-size: contain;
@@ -133,8 +84,8 @@ h2 {
             background-position: center;
             border: none;
             cursor: pointer;
-            width: 150;
-            height: 50;
+            width: 150px;
+            height: 50px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -187,10 +138,10 @@ h2 {
             margin-bottom: 10px;
         }
         .slider-container {
-    width: 100%;
-    max-width: 300px;
-    margin: 10px auto;
-}
+            width: 100%;
+            max-width: 300px;
+            margin: 10px auto;
+        }
         input[type="range"] {
             -webkit-appearance: none;
             width: 100%;
@@ -237,71 +188,93 @@ h2 {
             line-height: 1.5;
             margin-bottom: 20px;
         }
-        #magicalEnergyField {
+        #magicalEnergyField, #particleCanvas {
             width: 100%;
             height: auto;
-            background-image: url('images/canvas.png');
-            background-size: 100% 100%;
-            background-repeat: no-repeat;
-            background-position: center;
-            border: none;
-            margin-bottom: 20px;
-            position: relative;
-            z-index: 1;
+            max-width: 600px;
         }
-
-        #summoningChoiceScreen, #demonSummonedScreen {
-    text-align: center;
-}
-
-#demonImage {
-    max-width: 100%;
-    height: auto;
-    margin: 20px 0;
-}
-
-
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 48px;
+            }
+            h2 {
+                font-size: 36px;
+            }
+            .parchment {
+                padding: 20px;
+            }
+            #spellLevel {
+                font-size: 36px;
+            }
+            .verse {
+                font-size: 24px;
+            }
+        }
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 36px;
+            }
+            h2 {
+                font-size: 28px;
+            }
+            .parchment {
+                padding: 15px;
+            }
+            #spellLevel {
+                font-size: 28px;
+            }
+            .verse {
+                font-size: 20px;
+            }
+        }
+        #loadingScreen {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: black;
+            color: white;
+        }
+        #loadingBar {
+            width: 300px;
+            height: 20px;
+            background-color: #f0f0f0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+        #loadingProgress {
+            width: 0%;
+            height: 100%;
+            background-color: #4CAF50;
+            transition: width 0.5s;
+        }
     </style>
-
-
-
-
 </head>
 <body>
+    <div id="loadingScreen" class="screen">
+        <h2>Loading...</h2>
+        <div id="loadingBar">
+            <div id="loadingProgress"></div>
+        </div>
+    </div>
     <div class="parchment">
         <div id="startScreen" class="screen">
             <h1>The Harmonic Summoning</h1>
-            <p>Welcome, apprentice Gareth.</p>
-            <p>Happy Birthday!</p>
-            <p>Your journey into the realm of Fourier Magic begins now.</p>
-            <button onclick="clickAndExecute(() => showVerse(1))">Begin</button>
+            <p>Welcome, apprentice. Your journey into the realm of Harmonic Magic begins now.</p>
+            <button onclick="showVerse(1)">Begin</button>
         </div>
         
         <div id="verseScreen" class="screen">
             <h2 id="verseTitle"></h2>
             <p id="verseContent" class="verse"></p>
-            <button onclick="clickAndExecute(startLevel)">Continue</button>
+            <button onclick="startLevel()">Continue</button>
         </div>
-        
-        <div id="summoningChoiceScreen" class="screen">
-            <h2>The Grand Transform is Complete</h2>
-            <p>You can now summon a Fourier demon. Do you wish to continue?</p>
-            <button onclick="summonDemon()">Summon Demon</button>
-            <button onclick="restartGame()">Start Over</button>
-        </div>
-
-        <div id="demonSummonedScreen" class="screen">
-            <h2>Fourier Demon Summoned</h2>
-            <img id="demonImage" src="" alt="Summoned Fourier Demon">
-            <button onclick="restartGame()">Start Again</button>
-        </div>
-
-
 
         <div id="gameScreen" class="screen">
             <h1>The Harmonic Summoning</h1>
             <div id="spellLevel">Spell Level 1</div>
-            
             <div class="canvas-container">
                 <canvas id="magicalEnergyField" width="600" height="200"></canvas>
                 <canvas id="particleCanvas" width="600" height="200"></canvas>
@@ -331,9 +304,29 @@ h2 {
             <p id="messageContent"></p>
             <button id="messageButton"></button>
         </div>
+
+        <div id="summoningChoiceScreen" class="screen">
+            <h2>The Grand Transform is Complete</h2>
+            <p>You can now summon a Fourier demon. Do you wish to continue?</p>
+            <button id="summonButton">Yes, Summon the Demon</button>
+            <button id="restartButton">No, Start Over</button>
+        </div>
+
+        <div id="demonSummonedScreen" class="screen">
+            <h2>Fourier Demon Summoned</h2>
+            <img id="demonImage" src="" alt="Summoned Fourier Demon">
+            <button onclick="restartGame()">Start Again</button>
+        </div>
     </div>
 
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            showScreen('loadingScreen');
+            preloadAssets(function() {
+                showScreen('startScreen');
+            });
+        });
+
         const waveformCanvas = document.getElementById('magicalEnergyField');
         const waveformCtx = waveformCanvas.getContext('2d');
         const width = waveformCanvas.width;
@@ -350,6 +343,8 @@ h2 {
         let audioContext;
         let oscillators = [];
 
+        const audioCache = {};
+
         const verses = [
             "The Fundamental Harmonic,\nThe core vibration,\nThe heartbeat of power.\nIn Fourier's realm,\nA pure sinusoidal wave,\nThe base frequency of magic.",
             "The Second Harmonic,\nSharper peaks,\nFlatter troughs.\nObserve closely,\nThe first overtone,\nChanging the timbre of magic.",
@@ -359,6 +354,52 @@ h2 {
             "The Sixth Harmonic,\nA unique effect.\nRich, textured waveforms,\nMulti-layered magic.\nCrucial for intricate spells,\nA chorus of voices,\nDepth and resonance.",
             "The Seventh Harmonic,\nEthereal quality.\nChaotic yet structured.\nDivination and boundaries,\nUnpredictable insight, Piercing realms.\nPrepare for the grand summoning,\nThe veil thins."
         ];
+
+        function preloadAssets(callback) {
+            const imagesToLoad = [
+                'images/parchment.jpg',
+                'images/button.png',
+                'images/canvas.png',
+                'images/magicalResonanceMeter.png',
+                'images/needle.png',
+                'images/slider-background.png',
+                'images/slider-stone.png',
+                'images/demon1.jpg',
+                'images/demon2.jpg',
+    'images/demon3.jpg',
+    'images/demon4.jpg',
+                
+            ];
+
+            const soundsToLoad = [
+                'sounds/click.wav',
+                'sounds/Cast.ogg'
+            ];
+
+            let totalAssets = imagesToLoad.length + soundsToLoad.length;
+            let loadedAssets = 0;
+
+            function assetLoaded() {
+                loadedAssets++;
+                const progress = (loadedAssets / totalAssets) * 100;
+                document.getElementById('loadingProgress').style.width = progress + '%';
+                if (loadedAssets === totalAssets) {
+                    callback();
+                }
+            }
+
+            imagesToLoad.forEach(src => {
+                const img = new Image();
+                img.onload = assetLoaded;
+                img.src = src;
+            });
+
+            soundsToLoad.forEach(src => {
+                const audio = new Audio();
+                audio.oncanplaythrough = assetLoaded;
+                audio.src = src;
+            });
+        }
 
         function showScreen(screenId) {
             document.querySelectorAll('.screen').forEach(screen => screen.style.display = 'none');
@@ -372,9 +413,12 @@ h2 {
         }
 
         function playSound(soundFile) {
-    const audio = new Audio(`sounds/${soundFile}`);
-    audio.play().catch(error => console.error('Error playing sound:', error));
-}
+            if (!audioCache[soundFile]) {
+                audioCache[soundFile] = new Audio(`sounds/${soundFile}`);
+            }
+            audioCache[soundFile].currentTime = 0;
+            audioCache[soundFile].play().catch(error => console.error('Error playing sound:', error));
+        }
 
         function startLevel() {
             showScreen('gameScreen');
@@ -382,13 +426,13 @@ h2 {
         }
 
         function showMessage(title, content, buttonText, buttonAction) {
-    document.getElementById('messageTitle').textContent = title;
-    document.getElementById('messageContent').textContent = content;
-    const button = document.getElementById('messageButton');
-    button.textContent = buttonText;
-    button.onclick = () => clickAndExecute(buttonAction);
-    showScreen('messageScreen');
-}
+            document.getElementById('messageTitle').textContent = title;
+            document.getElementById('messageContent').textContent = content;
+            const button = document.getElementById('messageButton');
+            button.textContent = buttonText;
+            button.onclick = buttonAction;
+            showScreen('messageScreen');
+        }
 
         function initAudio() {
             audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -437,25 +481,6 @@ h2 {
             updateCanvas();
         }
 
-        function resizeCanvas() {
-    const container = document.querySelector('.canvas-container');
-    const canvas = document.getElementById('magicalEnergyField');
-    const particleCanvas = document.getElementById('particleCanvas');
-    
-    const newWidth = container.clientWidth;
-    const newHeight = (newWidth / 3); // Maintain 3:1 aspect ratio
-    
-    canvas.width = newWidth;
-    canvas.height = newHeight;
-    particleCanvas.width = newWidth;
-    particleCanvas.height = newHeight;
-    
-    updateCanvas(); // Redraw the waveforms
-}
-
-window.addEventListener('resize', resizeCanvas);
-resizeCanvas(); // Call once to set initial size
-
         function getOrdinalSuffix(i) {
             const j = i % 10,
                   k = i % 100;
@@ -501,40 +526,40 @@ resizeCanvas(); // Call once to set initial size
         }
 
         function drawWaveform(harmonics, isTarget) {
-    waveformCtx.beginPath();
-    if (isTarget) {
-        waveformCtx.strokeStyle = 'blue';
-    } else {
-        const matchPercentage = calculateMatch();
-        if (matchPercentage < 70) {
-            waveformCtx.strokeStyle = 'red';
-        } else if (matchPercentage < 93) {
-            waveformCtx.strokeStyle = 'red';
-        } else {
-            waveformCtx.strokeStyle = 'green';
+            waveformCtx.beginPath();
+            if (isTarget) {
+                waveformCtx.strokeStyle = 'blue';
+            } else {
+                const matchPercentage = calculateMatch();
+                if (matchPercentage < 70) {
+                    waveformCtx.strokeStyle = 'red';
+                } else if (matchPercentage < 93) {
+                    waveformCtx.strokeStyle = 'red';
+                } else {
+                    waveformCtx.strokeStyle = 'green';
+                }
+            }
+            const canvasWidth = waveformCanvas.width;
+            const canvasHeight = waveformCanvas.height;
+            for (let x = 0; x < canvasWidth; x++) {
+                let y = 0;
+                for (let i = 0; i < harmonics.length; i++) {
+                    y += harmonics[i] * Math.sin((i + 1) * x * (0.05 * 600 / canvasWidth));
+                }
+                y = canvasHeight / 2 - y * (50 * canvasHeight / 200);
+                if (x === 0) {
+                    waveformCtx.moveTo(x, y);
+                } else {
+                    waveformCtx.lineTo(x, y);
+                }
+            }
+            waveformCtx.stroke();
         }
-    }
-    const canvasWidth = waveformCanvas.width;
-    const canvasHeight = waveformCanvas.height;
-    for (let x = 0; x < canvasWidth; x++) {
-        let y = 0;
-        for (let i = 0; i < harmonics.length; i++) {
-            y += harmonics[i] * Math.sin((i + 1) * x * (0.05 * 600 / canvasWidth));
-        }
-        y = canvasHeight / 2 - y * (50 * canvasHeight / 200);
-        if (x === 0) {
-            waveformCtx.moveTo(x, y);
-        } else {
-            waveformCtx.lineTo(x, y);
-        }
-    }
-    waveformCtx.stroke();
-}
 
         function updateCanvas() {
-            waveformCtx.clearRect(0, 0, width, height);
+            waveformCtx.clearRect(0, 0, waveformCanvas.width, waveformCanvas.height);
             waveformCtx.fillStyle = 'rgba(0, 0, 0, 0)'; // Transparent background
-            waveformCtx.fillRect(0, 0, width, height);
+            waveformCtx.fillRect(0, 0, waveformCanvas.width, waveformCanvas.height);
             drawWaveform(targetHarmonics, true);
             drawWaveform(playerHarmonics, false);
             updateSubmitButton();
@@ -544,8 +569,8 @@ resizeCanvas(); // Call once to set initial size
             }
 
             if (oscillators.length > 0) {
-    playHarmonics(playerHarmonics);
-}
+                playHarmonics(playerHarmonics);
+            }
         }
 
         function generateTarget() {
@@ -565,38 +590,6 @@ resizeCanvas(); // Call once to set initial size
                 showMessage("Harmony Meter Already Consulted", "You've already consulted the Harmony Meter for this spell!", "Continue", () => showScreen('gameScreen'));
             }
         }
-
-        function clickAndExecute(action) {
-    playSound('click.wav');
-    action();
-}
-
-
-
-function showSummoningChoice() {
-    showScreen('summoningChoiceScreen');
-}
-
-const demonImages = [
-    'images/demon1.jpg',
-    'images/demon2.jpg',
-    'images/demon3.jpg',
-    'images/demon4.jpg',
-];
-
-function summonDemon() {
-    const randomIndex = Math.floor(Math.random() * demonImages.length);
-    const demonImageSrc = demonImages[randomIndex];
-    document.getElementById('demonImage').src = demonImageSrc;
-    showScreen('demonSummonedScreen');
-}
-
-function restartGame() {
-    currentLevel = 1;
-    showScreen('startScreen');
-}
-
-
 
         function calculateMatch() {
             let score = 0;
@@ -621,167 +614,194 @@ function restartGame() {
             needle.style.transform = `rotate(${angle}deg)`;
         }
 
-
         function vibrateWaves(duration) {
-    let startTime = Date.now();
-    let originalTargetHarmonics = [...targetHarmonics];
-    let originalPlayerHarmonics = [...playerHarmonics];
+            let startTime = Date.now();
+            let originalTargetHarmonics = [...targetHarmonics];
+            let originalPlayerHarmonics = [...playerHarmonics];
 
-    function vibrate() {
-        let elapsed = Date.now() - startTime;
-        if (elapsed < duration) {
-            // Apply a small random offset to each harmonic
-            targetHarmonics = originalTargetHarmonics.map(h => h + (Math.random() - 0.5) * 0.1);
-            playerHarmonics = originalPlayerHarmonics.map(h => h + (Math.random() - 0.5) * 0.1);
-            updateCanvas();
-            requestAnimationFrame(vibrate);
-        } else {
-            // Restore original harmonics
-            targetHarmonics = originalTargetHarmonics;
-            playerHarmonics = originalPlayerHarmonics;
-            updateCanvas();
-            triggerSpellEffect();
-        }
-    }
-
-    vibrate();
-}
-
-
-function submit() {
-    if (calculateMatch() >= 93) {
-        playSound('Cast.ogg');
-        submitButton.disabled = true;
-        
-        vibrateWaves(1500);
-        
-        setTimeout(() => {
-            triggerSpellEffect();
-            
-            setTimeout(() => {
-                submitButton.disabled = false;
-                if (currentLevel === 7) {
-                    showSummoningChoice();
-                } else if (!usedHintOnCurrentWave) {
-                    currentLevel++;
-                    showMessage("Level Complete", `Well done! You've mastered spell level ${currentLevel - 1}. Proceeding to the next level of the Grand Transform.`, "Continue", () => showVerse(currentLevel));
+            function vibrate() {
+                let elapsed = Date.now() - startTime;
+                if (elapsed < duration) {
+                    // Apply a small random offset to each harmonic
+                    targetHarmonics = originalTargetHarmonics.map(h => h + (Math.random() - 0.5) * 0.1);
+                    playerHarmonics = originalPlayerHarmonics.map(h => h + (Math.random() - 0.5) * 0.1);
+                    updateCanvas();
+                    requestAnimationFrame(vibrate);
                 } else {
-                    showMessage("Spell Cast with Assistance", "You've cast the spell correctly, but you relied on the Harmony Meter. Try casting a new spell without assistance to truly master this level.", "Try Again", () => {
-                        generateTarget();
-                        showScreen('gameScreen');
-                    });
+                    // Restore original harmonics
+                    targetHarmonics = originalTargetHarmonics;
+                    playerHarmonics = originalPlayerHarmonics;
+                    updateCanvas();
+                    triggerSpellEffect();
                 }
-            }, 2500);
-        }, 1500);
-    } else {
-        showMessage("Spell Lacks Power", "Your spell lacks power. Keep adjusting the harmonics to align with the target energy!", "Continue", () => showScreen('gameScreen'));
-    }
-}
+            }
 
+            vibrate();
+        }
 
-//listeners
+        function submit() {
+            if (calculateMatch() >= 93) {
+                playSound('Cast.ogg');
+                submitButton.disabled = true;
+                
+                vibrateWaves(1000); // Vibrate for 1 second (1000 ms)
+                
+                setTimeout(() => {
+                    triggerSpellEffect();
+                    
+                    setTimeout(() => {
+                        submitButton.disabled = false;
+                        if (currentLevel === 7) {
+                            showSummoningChoice();
+                        } else if (!usedHintOnCurrentWave) {
+                            currentLevel++;
+                            showMessage("Level Complete", `Well done! You've mastered spell level ${currentLevel - 1}. Proceeding to the next level of the Grand Transform.`, "Continue", () => showVerse(currentLevel));
+                        } else {
+                            showMessage("Spell Cast with Assistance", "You've cast the spell correctly, but you relied on the Harmony Meter. Try casting a new spell without assistance to truly master this level.", "Try Again", () => {
+                                generateTarget();
+                                showScreen('gameScreen');
+                            });
+                        }
+                    }, 2000); // 2 seconds delay after particle effect
+                }, 1000); // 1 second delay for vibration effect
+            } else {
+                showMessage("Spell Lacks Power", "Your spell lacks power. Keep adjusting the harmonics to align with the target energy!", "Continue", () => showScreen('gameScreen'));
+            }
+        }
 
-document.getElementById('generateTarget').addEventListener('click', () => {
-    playSound('click.wav');
-    generateTarget();
-});
+        function resizeCanvas() {
+            const container = document.querySelector('.canvas-container');
+            const canvas = document.getElementById('magicalEnergyField');
+            const particleCanvas = document.getElementById('particleCanvas');
+            
+            const newWidth = container.clientWidth;
+            const newHeight = (newWidth / 3); // Maintain 3:1 aspect ratio
+            
+            canvas.width = newWidth;
+            canvas.height = newHeight;
+            particleCanvas.width = newWidth;
+            particleCanvas.height = newHeight;
+            
+            updateCanvas(); // Redraw the waveforms
+        }
 
-document.getElementById('getHint').addEventListener('click', () => {
-    playSound('click.wav');
-    getHint();
-});
+        window.addEventListener('resize', resizeCanvas);
 
-submitButton.addEventListener('click', () => {
-    playSound('click.wav');
-    submit();
-});
+        // Event Listeners
+        document.getElementById('generateTarget').addEventListener('click', () => {
+            playSound('click.wav');
+            generateTarget();
+        });
 
-document.getElementById('playSound').addEventListener('click', () => {
-    playSound('click.wav');
-    playHarmonics(playerHarmonics);
-});
-        showScreen('startScreen');
+        document.getElementById('getHint').addEventListener('click', () => {
+            playSound('click.wav');
+            getHint();
+        });
+
+        submitButton.addEventListener('click', () => {
+            playSound('click.wav');
+            submit();
+        });
+
+        document.getElementById('playSound').addEventListener('click', () => {
+            playSound('click.wav');
+            playHarmonics(playerHarmonics);
+        });
 
         // Particle effect code
         const particleCanvas = document.getElementById('particleCanvas');
-const particleCtx = particleCanvas.getContext('2d');
+        const particleCtx = particleCanvas.getContext('2d');
 
-class Particle {
-    constructor(x, y) {
-        this.x = x;
-        this.y = y;
-        this.size = Math.random() * 10 + 5; // Increased size
-        this.speedX = Math.random() * 3 - 1.5;
-        this.speedY = Math.random() * 3 - 1.5;
-        this.color = `hsl(${Math.random() * 60 + 180}, 100%, 50%)`;
-        this.life = 100; // Added life property
-    }
-    update() {
-        this.x += this.speedX;
-        this.y += this.speedY;
-        if (this.size > 0.2) this.size -= 0.1;
-        this.life--; // Decrease life
-    }
-    draw() {
-        particleCtx.fillStyle = this.color;
-        particleCtx.beginPath();
-        particleCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        particleCtx.fill();
-    }
-}
-
-let particles = [];
-
-function createParticles() {
-    for (let i = 0; i < 200; i++) { // Increased number of particles
-        particles.push(new Particle(particleCanvas.width / 2, particleCanvas.height / 2));
-    }
-}
-
-function animateParticles() {
-    particleCtx.clearRect(0, 0, particleCanvas.width, particleCanvas.height);
-    particles.forEach((particle, index) => {
-        particle.update();
-        particle.draw();
-        if (particle.life <= 0) {
-            particles.splice(index, 1);
+        class Particle {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.size = Math.random() * 10 + 5; // Increased size
+                this.speedX = Math.random() * 3 - 1.5;
+                this.speedY = Math.random() * 3 - 1.5;
+                this.color = `hsl(${Math.random() * 60 + 180}, 100%, 50%)`;
+                this.life = 100; // Added life property
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.size > 0.2) this.size -= 0.1;
+                this.life--; // Decrease life
+            }
+            draw() {
+                particleCtx.fillStyle = this.color;
+                particleCtx.beginPath();
+                particleCtx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                particleCtx.fill();
+            }
         }
-    });
-    if (particles.length > 0) {
-        requestAnimationFrame(animateParticles);
-    }
-}
 
-function triggerSpellEffect() {
-    createParticles();
-    animateParticles();
-}
+        let particles = [];
 
+        function createParticles() {
+            for (let i = 0; i < 200; i++) { // Increased number of particles
+                particles.push(new Particle(particleCanvas.width / 2, particleCanvas.height / 2));
+            }
+        }
 
-//
-//function autoPassLevel() {
-//    if (currentLevel === 7) {
-//        showMessage("Congratulations!", "You've mastered the Grand Transform and summoned the powerful entity!", "Start Over", () => {
-//            currentLevel = 1;
-//            showScreen('summoningChoiceScreen');
-//        });
-//    } else {
-//        currentLevel++;
-//        showMessage("Level Auto Passed", `Moving to level ${currentLevel}.`, "Continue", () => showVerse(currentLevel));
-//    }
-// }
-//
-//
-// document.getElementById('autoPassLevel').addEventListener('click', autoPassLevel);
-//
-//
-// (for the game screen)  // <button id="autoPassLevel" style="background-color: red; color: white;">Auto Pass Level</button> 
+        function animateParticles() {
+            particleCtx.clearRect(0, 0, particleCanvas.width, particleCanvas.height);
+            particles.forEach((particle, index) => {
+                particle.update();
+                particle.draw();
+                if (particle.life <= 0) {
+                    particles.splice(index, 1);
+                }
+            });
+            if (particles.length > 0) {
+                requestAnimationFrame(animateParticles);
+            }
+        }
 
+        function triggerSpellEffect() {
+            createParticles();
+            animateParticles();
+        }
 
+        // Summoning choice and demon summoning
+        function showSummoningChoice() {
+            showScreen('summoningChoiceScreen');
+        }
 
-// Make sure the particle canvas is the same size as the main canvas
-particleCanvas.width = waveformCanvas.width;
-particleCanvas.height = waveformCanvas.height;
+        const demonImages = [
+            'images/demon1.jpg',
+            'images/demon2.jpg',
+            'images/demon3.jpg',
+            // Add more image paths as needed
+        ];
+
+        function summonDemon() {
+            const randomIndex = Math.floor(Math.random() * demonImages.length);
+            const demonImageSrc = demonImages[randomIndex];
+            document.getElementById('demonImage').src = demonImageSrc;
+            showScreen('demonSummonedScreen');
+        }
+
+        function restartGame() {
+            currentLevel = 1;
+            showScreen('startScreen');
+        }
+
+        // Add event listeners for summoning choice buttons
+        document.getElementById('summonButton').addEventListener('click', () => {
+            playSound('click.wav');
+            summonDemon();
+        });
+
+        document.getElementById('restartButton').addEventListener('click', () => {
+            playSound('click.wav');
+            restartGame();
+        });
+
+        // Initialize the game
+        resizeCanvas();
     </script>
 </body>
 </html>
+
+

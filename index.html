@@ -108,8 +108,10 @@
             margin-bottom: 20px;
         }
         #magicalResonanceMeter {
-            width: 450px;
-            height: 225px;
+            width: 100%;
+            max-width: 450px;
+            height: auto;
+            aspect-ratio: 2 / 1;
             background-image: url('images/magicalResonanceMeter.png');
             background-size: cover;
             position: relative;
@@ -118,8 +120,8 @@
             display: none;
         }
         #needle {
-            width: 25px;
-            height: 150px;
+            width: 5.5%;
+            height: 65%;
             background-image: url('images/needle.png');
             background-size: contain;
             background-repeat: no-repeat;
@@ -209,6 +211,14 @@
             .verse {
                 font-size: 24px;
             }
+            #magicalResonanceMeter {
+                max-width: 100%;
+                height: auto;
+            }
+            #needle {
+                width: 5.5%;
+                height: 65%;
+            }
         }
         @media (max-width: 480px) {
             h1 {
@@ -225,6 +235,14 @@
             }
             .verse {
                 font-size: 20px;
+            }
+            #magicalResonanceMeter {
+                max-width: 100%;
+                height: auto;
+            }
+            #needle {
+                width: 5.5%;
+                height: 65%;
             }
         }
         #loadingScreen {
@@ -644,7 +662,7 @@
                 playSound('Cast.ogg');
                 submitButton.disabled = true;
                 
-                vibrateWaves(1000); // Vibrate for 1 second (1000 ms)
+                vibrateWaves(1500); // Vibrate for 1 second (1000 ms)
                 
                 setTimeout(() => {
                     triggerSpellEffect();
@@ -662,8 +680,8 @@
                                 showScreen('gameScreen');
                             });
                         }
-                    }, 2000); // 2 seconds delay after particle effect
-                }, 1000); // 1 second delay for vibration effect
+                    }, 2500); // 2 seconds delay after particle effect
+                }, 1500); // 1 second delay for vibration effect
             } else {
                 showMessage("Spell Lacks Power", "Your spell lacks power. Keep adjusting the harmonics to align with the target energy!", "Continue", () => showScreen('gameScreen'));
             }
@@ -803,5 +821,3 @@
     </script>
 </body>
 </html>
-
-

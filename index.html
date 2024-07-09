@@ -279,6 +279,13 @@
     object-fit: contain;  /* Ensures the image fits within the defined area without distortion */
 }
 
+#demonText {
+    font-size: 36px;
+    color: #1a1414;
+    text-align: center;
+    margin-top: 15px;
+    font-family: 'Caveat', cursive;
+}
 
     </style>
 </head>
@@ -337,7 +344,7 @@
 
         <div id="summoningChoiceScreen" class="screen">
             <h2>The Grand Transform is Complete</h2>
-            <p>You can now summon a Fourier demon. Do you wish to continue?</p>
+            <p>You can now summon a Fourier demon.<br> Do you wish to continue?</p>
             <button id="summonButton">Yes</button>
             <button id="restartButton">No, Start Over</button>
         </div>
@@ -345,9 +352,10 @@
         <div id="demonSummonedScreen" class="screen">
             <h2>Fourier Demon Summoned</h2>
             <img id="demonImage" class="demon-image" src="" alt="Summoned Fourier Demon">
+            <p id="demonText">This is one of five Fourier Demons.<br>Play again to collect them all.</p>
             <button onclick="restartGame()">Start Again</button>
         </div>
-    </div>
+        
 
     <script>
 
@@ -408,8 +416,8 @@
                 'images/slider-stone.png',
                 'images/demon1.jpg',
                 'images/demon2.jpg',
-    'images/demon3.jpg',
-    'images/demon4.jpg',
+                'images/demon3.jpg',
+                'images/demon4.jpg',
                 
             ];
 
@@ -857,6 +865,7 @@ function playHarmonics(harmonics) {
             'images/demon1.jpg',
             'images/demon2.jpg',
             'images/demon3.jpg',
+            'images/demon4.jpg',
             // Add more image paths as needed
         ];
 

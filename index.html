@@ -268,6 +268,18 @@
             background-color: #4CAF50;
             transition: width 0.5s;
         }
+
+        .demon-image {
+    max-width: 100%;  /* Ensures the image will not be wider than its container */
+    max-height: 80vh;  /* Ensures the image will not be taller than 80% of the viewport height */
+    width: auto;  /* Maintains the aspect ratio */
+    height: auto;  /* Maintains the aspect ratio */
+    display: block;
+    margin: 0 auto;  /* Centers the image horizontally */
+    object-fit: contain;  /* Ensures the image fits within the defined area without distortion */
+}
+
+
     </style>
 </head>
 <body>
@@ -326,24 +338,36 @@
         <div id="summoningChoiceScreen" class="screen">
             <h2>The Grand Transform is Complete</h2>
             <p>You can now summon a Fourier demon. Do you wish to continue?</p>
-            <button id="summonButton">Yes, Summon the Demon</button>
+            <button id="summonButton">Yes</button>
             <button id="restartButton">No, Start Over</button>
         </div>
 
         <div id="demonSummonedScreen" class="screen">
             <h2>Fourier Demon Summoned</h2>
-            <img id="demonImage" src="" alt="Summoned Fourier Demon">
+            <img id="demonImage" class="demon-image" src="" alt="Summoned Fourier Demon">
             <button onclick="restartGame()">Start Again</button>
         </div>
     </div>
 
     <script>
+
+
         document.addEventListener('DOMContentLoaded', function() {
             showScreen('loadingScreen');
             preloadAssets(function() {
                 showScreen('startScreen');
+               testAfterLevel7()  //just for testing otherwise comment out
             });
         });
+
+        function testAfterLevel7() {
+    // Set the current level to 8
+    currentLevel = 8;
+
+    // Directly show the summoning choice screen
+    showSummoningChoice();
+}
+
 
         const waveformCanvas = document.getElementById('magicalEnergyField');
         const waveformCtx = waveformCanvas.getContext('2d');
@@ -451,42 +475,85 @@
             button.onclick = buttonAction;
             showScreen('messageScreen');
         }
+//this is a point where i change things 
+function initAudio() {
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
-        function initAudio() {
-            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const fundamentalFreq = 220; // A3 note
+
+    document.querySelectorAll('input[type="range"]').forEach((slider, index) => {
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(fundamentalFreq * (index + 1), audioContext.currentTime);
+        
+        gainNode.gain.setValueAtTime(0, audioContext.currentTime); // Start with gain 0
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.start();
+        
+        oscillator.gainNode = gainNode; // Store reference to gainNode
+        oscillators.push(oscillator);
+    });
+}
+
+
+document.querySelectorAll('input[type="range"]').forEach(slider => {
+    slider.addEventListener('input', () => {
+        updateHarmonics();
+    });
+});
+
+function updateHarmonics() {
+    const harmonics = [];
+    document.querySelectorAll('input[type="range"]').forEach(slider => {
+        harmonics.push(parseFloat(slider.value));
+    });
+
+    harmonics.forEach((amplitude, index) => {
+        if (oscillators[index]) {
+            const gainNode = oscillators[index].gainNode;
+            gainNode.gain.linearRampToValueAtTime(amplitude, audioContext.currentTime + 0.1);
         }
+    });
+}
 
-        function playHarmonics(harmonics) {
-            if (!audioContext) initAudio();
+function playHarmonics(harmonics) {
+    if (!audioContext) initAudio();
 
-            oscillators.forEach(osc => osc.stop());
-            oscillators = [];
+    // Stop previous oscillators if any
+    oscillators.forEach(osc => osc.stop());
+    oscillators = [];
 
-            const fundamentalFreq = 220; // A3 note
+    const fundamentalFreq = 220; // A3 note
 
-            harmonics.forEach((amplitude, index) => {
-                if (amplitude > 0) {
-                    const oscillator = audioContext.createOscillator();
-                    const gainNode = audioContext.createGain();
+    harmonics.forEach((amplitude, index) => {
+        if (amplitude > 0) {
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
 
-                    oscillator.type = 'sine';
-                    oscillator.frequency.setValueAtTime(fundamentalFreq * (index + 1), audioContext.currentTime);
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(fundamentalFreq * (index + 1), audioContext.currentTime);
 
-                    gainNode.gain.setValueAtTime(amplitude, audioContext.currentTime);
+            gainNode.gain.setValueAtTime(amplitude, audioContext.currentTime, 0.1);
 
-                    oscillator.connect(gainNode);
-                    gainNode.connect(audioContext.destination);
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
 
-                    oscillator.start();
-                    oscillators.push(oscillator);
-                }
-            });
-
-            setTimeout(() => {
-                oscillators.forEach(osc => osc.stop());
-                oscillators = [];
-            }, 2000);
+            oscillator.start();
+            oscillators.push(oscillator);
         }
+    });
+
+    // Stop oscillators after 2 seconds
+    setTimeout(() => {
+        oscillators.forEach(osc => osc.stop());
+        oscillators = [];
+    }, 2000);
+}
 
         function resetSliders() {
             playerHarmonics = Array(currentLevel).fill(0);

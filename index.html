@@ -46,14 +46,11 @@
             max-width: 600px;
             margin: 0 auto 20px;
         }
-
         .canvas-wrapper {
             position: relative;
             width: 100%;
-            height: 0;
-            padding-bottom: 33.33%; /* This maintains a 3:1 aspect ratio */
+            padding-bottom: 33.33%; /* 3:1 aspect ratio */
         }
-
         .canvas-border {
             position: absolute;
             top: 0;
@@ -64,11 +61,24 @@
             z-index: 1;
         }
 
+        #magicalEnergyField, #particleCanvas {
+    position: absolute;
+    top: 5%;
+    left: 5%;
+    width: 90%;
+    height: 90%;
+    z-index: 2;
+}
+
+
 
         canvas {
-            
-            margin-bottom: 20px;
-            background: transparent;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
         }
         #particleCanvas {
             z-index: 3;
@@ -204,15 +214,7 @@
             line-height: 1.5;
             margin-bottom: 20px;
         }
-        #magicalEnergyField, #particleCanvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 2;
-        }
-
+        
         @media (max-width: 768px) {
             h1 {
                 font-size: 48px;
@@ -288,23 +290,22 @@
         }
 
         .demon-image {
-    max-width: 100%;  /* Ensures the image will not be wider than its container */
-    max-height: 80vh;  /* Ensures the image will not be taller than 80% of the viewport height */
-    width: auto;  /* Maintains the aspect ratio */
-    height: auto;  /* Maintains the aspect ratio */
-    display: block;
-    margin: 0 auto;  /* Centers the image horizontally */
-    object-fit: contain;  /* Ensures the image fits within the defined area without distortion */
-}
+            max-width: 100%;
+            max-height: 80vh;
+            width: auto;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+            object-fit: contain;
+        }
 
-#demonText {
-    font-size: 28px;
-    color: #1a1414;
-    text-align: center;
-    margin-top: 15px;
-    font-family: 'Caveat', cursive;
-}
-
+        #demonText {
+            font-size: 28px;
+            color: #1a1414;
+            text-align: center;
+            margin-top: 15px;
+            font-family: 'Caveat', cursive;
+        }
     </style>
 </head>
 <body>
@@ -330,7 +331,6 @@
         <div id="gameScreen" class="screen">
             <h1>The Harmonic Summoning</h1>
             <div id="spellLevel">Spell Level 1</div>
-            
             <div class="canvas-container">
                 <div class="canvas-wrapper">
                     <img src="images/canvas.png" alt="Canvas Border" class="canvas-border">
@@ -377,7 +377,7 @@
             <p id="demonText">This is one of five Fourier Demons.<br>Play again to collect them all.</p>
             <button onclick="restartGame()">Start Again</button>
         </div>
-        
+    </div>
 
     <script>
 
@@ -641,35 +641,42 @@ function playHarmonics(harmonics) {
         }
 
         function drawWaveform(harmonics, isTarget) {
-            waveformCtx.beginPath();
-            if (isTarget) {
-                waveformCtx.strokeStyle = 'blue';
-            } else {
-                const matchPercentage = calculateMatch();
-                if (matchPercentage < 70) {
-                    waveformCtx.strokeStyle = 'red';
-                } else if (matchPercentage < 93) {
-                    waveformCtx.strokeStyle = 'red';
-                } else {
-                    waveformCtx.strokeStyle = 'green';
-                }
-            }
-            const canvasWidth = waveformCanvas.width;
-            const canvasHeight = waveformCanvas.height;
-            for (let x = 0; x < canvasWidth; x++) {
-                let y = 0;
-                for (let i = 0; i < harmonics.length; i++) {
-                    y += harmonics[i] * Math.sin((i + 1) * x * (0.05 * 600 / canvasWidth));
-                }
-                y = canvasHeight / 2 - y * (50 * canvasHeight / 200);
-                if (x === 0) {
-                    waveformCtx.moveTo(x, y);
-                } else {
-                    waveformCtx.lineTo(x, y);
-                }
-            }
-            waveformCtx.stroke();
+    waveformCtx.beginPath();
+    if (isTarget) {
+        waveformCtx.strokeStyle = 'blue';
+    } else {
+        const matchPercentage = calculateMatch();
+        if (matchPercentage < 70) {
+            waveformCtx.strokeStyle = 'red';
+        } else if (matchPercentage < 93) {
+            waveformCtx.strokeStyle = 'red';
+        } else {
+            waveformCtx.strokeStyle = 'green';
         }
+    }
+    const canvasWidth = waveformCanvas.width;
+    const canvasHeight = waveformCanvas.height;
+    const drawingWidth = canvasWidth * 0.9;  // 90% of the canvas width
+    const drawingHeight = canvasHeight * 0.9;  // 90% of the canvas height
+    const xOffset = canvasWidth * 0.05;  // 5% offset from left
+    const yOffset = canvasHeight * 0.05;  // 5% offset from top
+
+    for (let x = 0; x < drawingWidth; x++) {
+        let y = 0;
+        for (let i = 0; i < harmonics.length; i++) {
+            y += harmonics[i] * Math.sin((i + 1) * x * (0.05 * 600 / drawingWidth));
+        }
+        y = drawingHeight / 2 - y * (45 * drawingHeight / 200);  // Adjusted scaling factor
+        const drawX = x + xOffset;
+        const drawY = y + yOffset;
+        if (x === 0) {
+            waveformCtx.moveTo(drawX, drawY);
+        } else {
+            waveformCtx.lineTo(drawX, drawY);
+        }
+    }
+    waveformCtx.stroke();
+}
 
         function updateCanvas() {
             waveformCtx.clearRect(0, 0, waveformCanvas.width, waveformCanvas.height);
@@ -785,21 +792,25 @@ function playHarmonics(harmonics) {
         }
 
         function resizeCanvas() {
-            const container = document.querySelector('.canvas-wrapper');
-            const canvas = document.getElementById('magicalEnergyField');
-            const particleCanvas = document.getElementById('particleCanvas');
+    const container = document.querySelector('.canvas-wrapper');
+    const canvas = document.getElementById('magicalEnergyField');
+    const particleCanvas = document.getElementById('particleCanvas');
     
-            const newWidth = container.clientWidth;
-            const newHeight = container.clientHeight;
+    const newWidth = container.clientWidth;
+    const newHeight = newWidth / 3; // Maintain 3:1 aspect ratio
     
-            canvas.width = newWidth;
-            canvas.height = newHeight;
-            particleCanvas.width = newWidth;
-            particleCanvas.height = newHeight;
+    canvas.width = newWidth;
+    canvas.height = newHeight;
+    particleCanvas.width = newWidth;
+    particleCanvas.height = newHeight;
     
-            updateCanvas(); // Redraw the waveforms
-        }
+    updateCanvas(); // Redraw the waveforms
+}
 
+        window.addEventListener('resize', resizeCanvas);
+
+        // Call resizeCanvas initially and whenever the window is resized
+        window.addEventListener('load', resizeCanvas);
         window.addEventListener('resize', resizeCanvas);
 
         // Event Listeners

@@ -307,7 +307,7 @@
 
         .fade-in {
     opacity: 0;
-    transition: opacity 1s ease-in;
+    transition: opacity 3s ease-in;
 }
 
 
@@ -315,6 +315,14 @@
     </style>
 </head>
 <body>
+
+    <audio id="backgroundMusic" loop>
+        <source src="sounds/happy-bday-Gareth.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
+
+    
+
     <div id="loadingScreen" class="screen">
         <h2>Loading...</h2>
         <div id="loadingBar">
@@ -382,6 +390,7 @@
             <img id="demonImage" class="demon-image fade-in" src="" alt="Summoned Fourier Demon">
             <p id="demonText">This is one of five Fourier Demons.<br>Play again to collect them all.</p>
             <button onclick="restartGame()">Start Again</button>
+            <button id="toggleMusic">Toggle Music</button>
         </div>
     </div>
 
@@ -404,6 +413,10 @@
                 document.querySelectorAll('button:not(#playSound)').forEach(button => {
                     button.addEventListener('click', playClickSound);
                 });
+
+                // Uncomment the next line to automatically test after level 7
+                 testAfterLevel7();
+
             });
         });
 
@@ -412,7 +425,7 @@
         }
 
         function testAfterLevel7() {
-            // Set the current level to 8
+            //Set the current level to 8
             currentLevel = 8;
 
             // Directly show the summoning choice screen
@@ -640,6 +653,9 @@
         }
 
         function initializeLevel() {
+            
+            
+            
             const harmonicControls = document.getElementById('harmonicControls');
             harmonicControls.innerHTML = '';
             
@@ -946,7 +962,9 @@
             // Add more image paths as needed
         ];
 
-        function summonDemon() {
+        let backgroundMusic;
+
+function summonDemon() {
     playClickSound();
     const randomIndex = Math.floor(Math.random() * demonImages.length);
     const demonImageSrc = demonImages[randomIndex];
@@ -960,13 +978,34 @@
     
     // Set opacity to 1 to start the fade-in effect
     demonImage.style.opacity = '1';
+
+    // Play background music
+    backgroundMusic = document.getElementById('backgroundMusic');
+    backgroundMusic.volume = 0.5; // Set volume to 50%
+    backgroundMusic.play().catch(e => console.log("Error playing audio:", e));
 }
 
-        function restartGame() {
-            playClickSound();
-            currentLevel = 1;
-            showScreen('startScreen');
-        }
+function stopBackgroundMusic() {
+    if (backgroundMusic) {
+        backgroundMusic.pause();
+        backgroundMusic.currentTime = 0;
+    }
+}
+
+document.getElementById('toggleMusic').addEventListener('click', function() {
+    if (backgroundMusic.paused) {
+        backgroundMusic.play();
+    } else {
+        backgroundMusic.pause();
+    }
+});
+
+function restartGame() {
+    playClickSound();
+    stopBackgroundMusic();
+    currentLevel = 1;
+    showScreen('startScreen');
+}
 
         // Add event listeners for summoning choice buttons
         document.getElementById('summonButton').addEventListener('click', summonDemon);
@@ -974,6 +1013,8 @@
 
         // Initialize the game
         resizeCanvas();
+
+        
     </script>
 
 

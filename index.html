@@ -62,15 +62,13 @@
         }
 
         #magicalEnergyField, #particleCanvas {
-    position: absolute;
-    top: 5%;
-    left: 5%;
-    width: 90%;
-    height: 90%;
-    z-index: 2;
-}
-
-
+            position: absolute;
+            top: 5%;
+            left: 5%;
+            width: 90%;
+            height: 90%;
+            z-index: 2;
+        }
 
         canvas {
             position: absolute;
@@ -306,6 +304,14 @@
             margin-top: 15px;
             font-family: 'Caveat', cursive;
         }
+
+        .fade-in {
+    opacity: 0;
+    transition: opacity 1s ease-in;
+}
+
+
+
     </style>
 </head>
 <body>
@@ -373,31 +379,45 @@
 
         <div id="demonSummonedScreen" class="screen">
             <h2>Fourier Demon Summoned</h2>
-            <img id="demonImage" class="demon-image" src="" alt="Summoned Fourier Demon">
+            <img id="demonImage" class="demon-image fade-in" src="" alt="Summoned Fourier Demon">
             <p id="demonText">This is one of five Fourier Demons.<br>Play again to collect them all.</p>
             <button onclick="restartGame()">Start Again</button>
         </div>
     </div>
 
-    <script>
 
+
+
+
+
+
+
+
+    <script>
+        let harmonicsTimeoutId = null;
 
         document.addEventListener('DOMContentLoaded', function() {
             showScreen('loadingScreen');
             preloadAssets(function() {
                 showScreen('startScreen');
-               //testAfterLevel7()  //just for testing otherwise comment out
+                // Add click sound to all buttons except the resonate button
+                document.querySelectorAll('button:not(#playSound)').forEach(button => {
+                    button.addEventListener('click', playClickSound);
+                });
             });
         });
 
+        function playClickSound() {
+            playSound('click.wav');
+        }
+
         function testAfterLevel7() {
-    // Set the current level to 8
-    currentLevel = 8;
+            // Set the current level to 8
+            currentLevel = 8;
 
-    // Directly show the summoning choice screen
-    showSummoningChoice();
-}
-
+            // Directly show the summoning choice screen
+            showSummoningChoice();
+        }
 
         const waveformCanvas = document.getElementById('magicalEnergyField');
         const waveformCtx = waveformCanvas.getContext('2d');
@@ -440,7 +460,6 @@
                 'images/demon2.jpg',
                 'images/demon3.jpg',
                 'images/demon4.jpg',
-                
             ];
 
             const soundsToLoad = [
@@ -479,6 +498,7 @@
         }
 
         function showVerse(level) {
+            playClickSound();
             document.getElementById('verseTitle').textContent = `Level ${level}`;
             document.getElementById('verseContent').textContent = verses[level - 1];
             showScreen('verseScreen');
@@ -493,6 +513,7 @@
         }
 
         function startLevel() {
+            playClickSound();
             showScreen('gameScreen');
             initializeLevel();
         }
@@ -502,88 +523,95 @@
             document.getElementById('messageContent').textContent = content;
             const button = document.getElementById('messageButton');
             button.textContent = buttonText;
-            button.onclick = buttonAction;
+            button.onclick = function() {
+                playClickSound();
+                buttonAction();
+            };
             showScreen('messageScreen');
         }
-//this is a point where i change things 
-function initAudio() {
-    audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
-    const fundamentalFreq = 220; // A3 note
+        function initAudio() {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
-    document.querySelectorAll('input[type="range"]').forEach((slider, index) => {
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
-        
-        oscillator.type = 'sine';
-        oscillator.frequency.setValueAtTime(fundamentalFreq * (index + 1), audioContext.currentTime);
-        
-        gainNode.gain.setValueAtTime(0, audioContext.currentTime); // Start with gain 0
-        
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
-        
-        oscillator.start();
-        
-        oscillator.gainNode = gainNode; // Store reference to gainNode
-        oscillators.push(oscillator);
-    });
-}
+            const fundamentalFreq = 220; // A3 note
 
-
-document.querySelectorAll('input[type="range"]').forEach(slider => {
-    slider.addEventListener('input', () => {
-        updateHarmonics();
-    });
-});
-
-function updateHarmonics() {
-    const harmonics = [];
-    document.querySelectorAll('input[type="range"]').forEach(slider => {
-        harmonics.push(parseFloat(slider.value));
-    });
-
-    harmonics.forEach((amplitude, index) => {
-        if (oscillators[index]) {
-            const gainNode = oscillators[index].gainNode;
-            gainNode.gain.linearRampToValueAtTime(amplitude, audioContext.currentTime + 0.1);
+            document.querySelectorAll('input[type="range"]').forEach((slider, index) => {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(fundamentalFreq * (index + 1), audioContext.currentTime);
+                
+                gainNode.gain.setValueAtTime(0, audioContext.currentTime); // Start with gain 0
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.start();
+                
+                oscillator.gainNode = gainNode; // Store reference to gainNode
+                oscillators.push(oscillator);
+            });
         }
-    });
-}
 
-function playHarmonics(harmonics) {
-    if (!audioContext) initAudio();
+        document.querySelectorAll('input[type="range"]').forEach(slider => {
+            slider.addEventListener('input', () => {
+                updateHarmonics();
+            });
+        });
 
-    // Stop previous oscillators if any
-    oscillators.forEach(osc => osc.stop());
-    oscillators = [];
+        function updateHarmonics() {
+            const harmonics = [];
+            document.querySelectorAll('input[type="range"]').forEach(slider => {
+                harmonics.push(parseFloat(slider.value));
+            });
 
-    const fundamentalFreq = 220; // A3 note
-
-    harmonics.forEach((amplitude, index) => {
-        if (amplitude > 0) {
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-
-            oscillator.type = 'sine';
-            oscillator.frequency.setValueAtTime(fundamentalFreq * (index + 1), audioContext.currentTime);
-
-            gainNode.gain.setValueAtTime(amplitude, audioContext.currentTime, 0.1);
-
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-
-            oscillator.start();
-            oscillators.push(oscillator);
+            harmonics.forEach((amplitude, index) => {
+                if (oscillators[index]) {
+                    const gainNode = oscillators[index].gainNode;
+                    const reducedAmplitude = amplitude * 0.5;
+                    gainNode.gain.linearRampToValueAtTime(reducedAmplitude, audioContext.currentTime + 0.1);
+                }
+            });
         }
-    });
 
-    // Stop oscillators after 2 seconds
-    setTimeout(() => {
-        oscillators.forEach(osc => osc.stop());
-        oscillators = [];
-    }, 2000);
-}
+        function stopHarmonics() {
+            oscillators.forEach(osc => osc.stop());
+            oscillators = [];
+        }
+
+        function playHarmonics(harmonics) {
+            if (!audioContext) initAudio();
+
+            // Stop previous oscillators if any
+            stopHarmonics();
+
+            const fundamentalFreq = 220; // A3 note
+
+            harmonics.forEach((amplitude, index) => {
+                if (amplitude > 0) {
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+
+                    oscillator.type = 'sine';
+                    oscillator.frequency.setValueAtTime(fundamentalFreq * (index + 1), audioContext.currentTime);
+
+                    const reducedAmplitude = amplitude * 0.5;
+                    gainNode.gain.setValueAtTime(reducedAmplitude, audioContext.currentTime);
+
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+
+                    oscillator.start();
+                    oscillators.push(oscillator);
+                }
+            });
+
+            // Return the timeout ID
+            return setTimeout(() => {
+                stopHarmonics();
+            }, 2000);
+        }
 
         function resetSliders() {
             playerHarmonics = Array(currentLevel).fill(0);
@@ -638,45 +666,51 @@ function playHarmonics(harmonics) {
             voltmeter.style.display = 'none';
             updateCanvas();
             resizeCanvas();
+
+            // Add click sounds to game screen buttons
+            document.getElementById('generateTarget').addEventListener('click', playClickSound);
+            document.getElementById('submit').addEventListener('click', playClickSound);
+            document.getElementById('getHint').addEventListener('click', playClickSound);
+            //document.getElementById('playSound').addEventListener('click', playClickSound); commented out to stop click sound on resonate button
         }
 
         function drawWaveform(harmonics, isTarget) {
-    waveformCtx.beginPath();
-    if (isTarget) {
-        waveformCtx.strokeStyle = 'blue';
-    } else {
-        const matchPercentage = calculateMatch();
-        if (matchPercentage < 70) {
-            waveformCtx.strokeStyle = 'red';
-        } else if (matchPercentage < 93) {
-            waveformCtx.strokeStyle = 'red';
-        } else {
-            waveformCtx.strokeStyle = 'green';
-        }
-    }
-    const canvasWidth = waveformCanvas.width;
-    const canvasHeight = waveformCanvas.height;
-    const drawingWidth = canvasWidth * 0.9;  // 90% of the canvas width
-    const drawingHeight = canvasHeight * 0.9;  // 90% of the canvas height
-    const xOffset = canvasWidth * 0.05;  // 5% offset from left
-    const yOffset = canvasHeight * 0.05;  // 5% offset from top
+            waveformCtx.beginPath();
+            if (isTarget) {
+                waveformCtx.strokeStyle = 'blue';
+            } else {
+                const matchPercentage = calculateMatch();
+                if (matchPercentage < 70) {
+                    waveformCtx.strokeStyle = 'red';
+                } else if (matchPercentage < 93) {
+                    waveformCtx.strokeStyle = 'red';
+                } else {
+                    waveformCtx.strokeStyle = 'green';
+                }
+            }
+            const canvasWidth = waveformCanvas.width;
+            const canvasHeight = waveformCanvas.height;
+            const drawingWidth = canvasWidth * 0.9;  // 90% of the canvas width
+            const drawingHeight = canvasHeight * 0.9;  // 90% of the canvas height
+            const xOffset = canvasWidth * 0.05;  // 5% offset from left
+            const yOffset = canvasHeight * 0.05;  // 5% offset from top
 
-    for (let x = 0; x < drawingWidth; x++) {
-        let y = 0;
-        for (let i = 0; i < harmonics.length; i++) {
-            y += harmonics[i] * Math.sin((i + 1) * x * (0.05 * 600 / drawingWidth));
+            for (let x = 0; x < drawingWidth; x++) {
+                let y = 0;
+                for (let i = 0; i < harmonics.length; i++) {
+                    y += harmonics[i] * Math.sin((i + 1) * x * (0.05 * 600 / drawingWidth));
+                }
+                y = drawingHeight / 2 - y * (45 * drawingHeight / 200);  // Adjusted scaling factor
+                const drawX = x + xOffset;
+                const drawY = y + yOffset;
+                if (x === 0) {
+                    waveformCtx.moveTo(drawX, drawY);
+                } else {
+                    waveformCtx.lineTo(drawX, drawY);
+                }
+            }
+            waveformCtx.stroke();
         }
-        y = drawingHeight / 2 - y * (45 * drawingHeight / 200);  // Adjusted scaling factor
-        const drawX = x + xOffset;
-        const drawY = y + yOffset;
-        if (x === 0) {
-            waveformCtx.moveTo(drawX, drawY);
-        } else {
-            waveformCtx.lineTo(drawX, drawY);
-        }
-    }
-    waveformCtx.stroke();
-}
 
         function updateCanvas() {
             waveformCtx.clearRect(0, 0, waveformCanvas.width, waveformCanvas.height);
@@ -763,10 +797,17 @@ function playHarmonics(harmonics) {
 
         function submit() {
             if (calculateMatch() >= 93) {
+                // Stop any playing harmonics
+                if (harmonicsTimeoutId) {
+                    clearTimeout(harmonicsTimeoutId);
+                    harmonicsTimeoutId = null;
+                }
+                stopHarmonics();
+
                 playSound('Cast.ogg');
                 submitButton.disabled = true;
                 
-                vibrateWaves(1500); // Vibrate for 1 second (1000 ms)
+                vibrateWaves(1500); // Vibrate for 1.5 seconds
                 
                 setTimeout(() => {
                     triggerSpellEffect();
@@ -784,28 +825,28 @@ function playHarmonics(harmonics) {
                                 showScreen('gameScreen');
                             });
                         }
-                    }, 2500); // 2 seconds delay after particle effect
-                }, 1500); // 1 second delay for vibration effect
+                    }, 2500); // 2.5 seconds delay after particle effect
+                }, 1500); // 1.5 seconds delay for vibration effect
             } else {
                 showMessage("Spell Lacks Power", "Your spell lacks power. Keep adjusting the harmonics to align with the target energy!", "Continue", () => showScreen('gameScreen'));
             }
         }
 
         function resizeCanvas() {
-    const container = document.querySelector('.canvas-wrapper');
-    const canvas = document.getElementById('magicalEnergyField');
-    const particleCanvas = document.getElementById('particleCanvas');
-    
-    const newWidth = container.clientWidth;
-    const newHeight = newWidth / 3; // Maintain 3:1 aspect ratio
-    
-    canvas.width = newWidth;
-    canvas.height = newHeight;
-    particleCanvas.width = newWidth;
-    particleCanvas.height = newHeight;
-    
-    updateCanvas(); // Redraw the waveforms
-}
+            const container = document.querySelector('.canvas-wrapper');
+            const canvas = document.getElementById('magicalEnergyField');
+            const particleCanvas = document.getElementById('particleCanvas');
+            
+            const newWidth = container.clientWidth;
+            const newHeight = newWidth / 3; // Maintain 3:1 aspect ratio
+            
+            canvas.width = newWidth;
+            canvas.height = newHeight;
+            particleCanvas.width = newWidth;
+            particleCanvas.height = newHeight;
+            
+            updateCanvas(); // Redraw the waveforms
+        }
 
         window.addEventListener('resize', resizeCanvas);
 
@@ -829,9 +870,12 @@ function playHarmonics(harmonics) {
             submit();
         });
 
-        document.getElementById('playSound').addEventListener('click', () => {
-            playSound('click.wav');
-            playHarmonics(playerHarmonics);
+        document.getElementById('playSound').addEventListener('click', (event) => {
+            event.stopPropagation(); // Prevent the click event from bubbling up
+            if (harmonicsTimeoutId) {
+                clearTimeout(harmonicsTimeoutId);
+            }
+            harmonicsTimeoutId = playHarmonics(playerHarmonics);
         });
 
         // Particle effect code
@@ -903,30 +947,39 @@ function playHarmonics(harmonics) {
         ];
 
         function summonDemon() {
-            const randomIndex = Math.floor(Math.random() * demonImages.length);
-            const demonImageSrc = demonImages[randomIndex];
-            document.getElementById('demonImage').src = demonImageSrc;
-            showScreen('demonSummonedScreen');
-        }
+    playClickSound();
+    const randomIndex = Math.floor(Math.random() * demonImages.length);
+    const demonImageSrc = demonImages[randomIndex];
+    const demonImage = document.getElementById('demonImage');
+    demonImage.src = demonImageSrc;
+    demonImage.style.opacity = '0';
+    showScreen('demonSummonedScreen');
+    
+    // Trigger reflow to ensure the opacity change takes effect
+    void demonImage.offsetWidth;
+    
+    // Set opacity to 1 to start the fade-in effect
+    demonImage.style.opacity = '1';
+}
 
         function restartGame() {
+            playClickSound();
             currentLevel = 1;
             showScreen('startScreen');
         }
 
         // Add event listeners for summoning choice buttons
-        document.getElementById('summonButton').addEventListener('click', () => {
-            playSound('click.wav');
-            summonDemon();
-        });
-
-        document.getElementById('restartButton').addEventListener('click', () => {
-            playSound('click.wav');
-            restartGame();
-        });
+        document.getElementById('summonButton').addEventListener('click', summonDemon);
+        document.getElementById('restartButton').addEventListener('click', restartGame);
 
         // Initialize the game
         resizeCanvas();
     </script>
+
+
+
+
+
+
 </body>
 </html>
